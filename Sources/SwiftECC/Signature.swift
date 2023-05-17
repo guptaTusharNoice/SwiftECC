@@ -5,8 +5,8 @@
 //  Created by Leif Ibsen on 18/02/2020.
 //
 
-import ASN1
-import BigInt
+
+
 
 ///
 /// ECSignature instances contain an ECDSA signature which consists of two byte arrays named *r* and *s*

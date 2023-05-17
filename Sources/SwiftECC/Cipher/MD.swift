@@ -8,8 +8,8 @@
 typealias Word = UInt32
 typealias Words = [Word]
 
-typealias Limb = UInt64
-typealias Limbs = [Limb]
+public typealias Limb = UInt64
+public typealias Limbs = [Limb]
 
 ///
 /// Message digest algorithms

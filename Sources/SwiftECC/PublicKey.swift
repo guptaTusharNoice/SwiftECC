@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import ASN1
-import BigInt
+
+
 ///
 /// An Elliptic Curve public key
 ///
