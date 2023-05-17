@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import CryptoKit
 import ASN1
 import BigInt
 ///
@@ -211,18 +210,18 @@ public class ECPublicKey: CustomStringConvertible {
     ///   - msg: The bytes to encrypt
     ///   - aad: Additional authenticated data - an empty array is default
     /// - Returns: The encrypted message and tag
-    public func encryptChaCha(msg: Bytes, aad: Bytes = []) -> Bytes {
-        let (R, S) = computeRS()
-        let (key, nonce) = Cipher.kdf(32, 12, S, R)
-        do {
-            let cryptoKitKey = CryptoKit.SymmetricKey(data: key)
-            let cryptoKitNonce = try CryptoKit.ChaChaPoly.Nonce(data: nonce)
-            let sealbox = try CryptoKit.ChaChaPoly.seal(msg, using: cryptoKitKey, nonce: cryptoKitNonce, authenticating: aad)
-            return R + Bytes(sealbox.ciphertext) + Bytes(sealbox.tag)
-        } catch {
-            fatalError("encryptChaCha: \(error)")
-        }
-    }
+//    public func encryptChaCha(msg: Bytes, aad: Bytes = []) -> Bytes {
+//        let (R, S) = computeRS()
+//        let (key, nonce) = Cipher.kdf(32, 12, S, R)
+//        do {
+//            let cryptoKitKey = CryptoKit.SymmetricKey(data: key)
+//            let cryptoKitNonce = try CryptoKit.ChaChaPoly.Nonce(data: nonce)
+//            let sealbox = try CryptoKit.ChaChaPoly.seal(msg, using: cryptoKitKey, nonce: cryptoKitNonce, authenticating: aad)
+//            return R + Bytes(sealbox.ciphertext) + Bytes(sealbox.tag)
+//        } catch {
+//            fatalError("encryptChaCha: \(error)")
+//        }
+//    }
     
     /// Encrypts a byte array with ECIES using the ChaCha20/Poly1305 algorithm - possibly with additional authenticated data
     ///
@@ -230,9 +229,9 @@ public class ECPublicKey: CustomStringConvertible {
     ///   - msg: The data to encrypt
     ///   - aad: Additional authenticated data - empty data is default
     /// - Returns: The encrypted message and tag
-    public func encryptChaCha(msg: Data, aad: Data = Data()) -> Data {
-        return Data(self.encryptChaCha(msg: Bytes(msg), aad: Bytes(aad)))
-    }
+//    public func encryptChaCha(msg: Data, aad: Data = Data()) -> Data {
+//        return Data(self.encryptChaCha(msg: Bytes(msg), aad: Bytes(aad)))
+//    }
 
     /// Encrypts a byte array with ECIES using the AES/GCM algorithm - possibly with additional authenticated data
     ///
@@ -241,19 +240,19 @@ public class ECPublicKey: CustomStringConvertible {
     ///   - cipher: The AES cipher to use
     ///   - aad: Additional authenticated data - an empty array is default
     /// - Returns: The encrypted message and tag
-    public func encryptAESGCM(msg: Bytes, cipher: AESCipher, aad: Bytes = []) -> Bytes {
-        let (R, S) = computeRS()
-        let keySize = cipher == .AES128 ? AES.keySize128 : (cipher == .AES192 ? AES.keySize192 : AES.keySize256)
-        let (key, nonce) = Cipher.kdf(keySize, 12, S, R)
-        do {
-            let cryptoKitKey = CryptoKit.SymmetricKey(data: key)
-            let cryptoKitNonce = try CryptoKit.AES.GCM.Nonce(data: nonce)
-            let sealbox = try CryptoKit.AES.GCM.seal(msg, using: cryptoKitKey, nonce: cryptoKitNonce, authenticating: aad)
-            return R + Bytes(sealbox.ciphertext) + Bytes(sealbox.tag)
-        } catch {
-            fatalError("encryptAESGCM: \(error)")
-        }
-    }
+//    public func encryptAESGCM(msg: Bytes, cipher: AESCipher, aad: Bytes = []) -> Bytes {
+//        let (R, S) = computeRS()
+//        let keySize = cipher == .AES128 ? AES.keySize128 : (cipher == .AES192 ? AES.keySize192 : AES.keySize256)
+//        let (key, nonce) = Cipher.kdf(keySize, 12, S, R)
+//        do {
+//            let cryptoKitKey = CryptoKit.SymmetricKey(data: key)
+//            let cryptoKitNonce = try CryptoKit.AES.GCM.Nonce(data: nonce)
+//            let sealbox = try CryptoKit.AES.GCM.seal(msg, using: cryptoKitKey, nonce: cryptoKitNonce, authenticating: aad)
+//            return R + Bytes(sealbox.ciphertext) + Bytes(sealbox.tag)
+//        } catch {
+//            fatalError("encryptAESGCM: \(error)")
+//        }
+//    }
 
     /// Encrypts a Data structure with ECIES using the AES/GCM algorithm - possibly with additional authenticated data
     ///
@@ -262,9 +261,9 @@ public class ECPublicKey: CustomStringConvertible {
     ///   - cipher: The AES cipher to use
     ///   - aad: Additional authenticated data - empty data is default
     /// - Returns: The encrypted message and tag
-    public func encryptAESGCM(msg: Data, cipher: AESCipher, aad: Data = Data()) -> Data {
-        return Data(self.encryptAESGCM(msg: Bytes(msg), cipher: cipher, aad: Bytes(aad)))
-    }
+//    public func encryptAESGCM(msg: Data, cipher: AESCipher, aad: Data = Data()) -> Data {
+//        return Data(self.encryptAESGCM(msg: Bytes(msg), cipher: cipher, aad: Bytes(aad)))
+//    }
 
     func computeRS() -> (R: Bytes, S: Bytes) {
         let r = (self.domain.order - BInt.ONE).randomLessThan() + BInt.ONE

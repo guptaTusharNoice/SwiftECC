@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import CryptoKit
 import ASN1
 import BigInt
 
@@ -422,22 +421,22 @@ public class ECPrivateKey: CustomStringConvertible {
     ///   - aad: Additional authenticated data - an empty array is default
     /// - Returns: The decrypted message
     /// - Throws: An exception if message authentication fails or the message is too short
-    public func decryptChaCha(msg: Bytes, aad: Bytes = []) throws -> Bytes {
-        let tagLength = 16
-        let (bwl, R, S) = try computeRS(msg, tagLength)
-        let keySize = 32
-        let cipherText = Bytes(msg[bwl ..< msg.count - tagLength])
-        let tag = Bytes(msg[msg.count - tagLength ..< msg.count])
-        let (key, nonce) = Cipher.kdf(keySize, 12, self.domain.align(S.x.asMagnitudeBytes()), R)
-        do {
-            let cryptoKitKey = CryptoKit.SymmetricKey(data: key)
-            let cryptoKitNonce = try CryptoKit.ChaChaPoly.Nonce(data: nonce)
-            let sealbox = try CryptoKit.ChaChaPoly.SealedBox(nonce: cryptoKitNonce, ciphertext: cipherText, tag: tag)
-            return try Bytes(CryptoKit.ChaChaPoly.open(sealbox, using: cryptoKitKey, authenticating: aad))
-        } catch {
-            throw ECException.authentication
-        }
-    }
+//    public func decryptChaCha(msg: Bytes, aad: Bytes = []) throws -> Bytes {
+//        let tagLength = 16
+//        let (bwl, R, S) = try computeRS(msg, tagLength)
+//        let keySize = 32
+//        let cipherText = Bytes(msg[bwl ..< msg.count - tagLength])
+//        let tag = Bytes(msg[msg.count - tagLength ..< msg.count])
+//        let (key, nonce) = Cipher.kdf(keySize, 12, self.domain.align(S.x.asMagnitudeBytes()), R)
+//        do {
+//            let cryptoKitKey = CryptoKit.SymmetricKey(data: key)
+//            let cryptoKitNonce = try CryptoKit.ChaChaPoly.Nonce(data: nonce)
+//            let sealbox = try CryptoKit.ChaChaPoly.SealedBox(nonce: cryptoKitNonce, ciphertext: cipherText, tag: tag)
+//            return try Bytes(CryptoKit.ChaChaPoly.open(sealbox, using: cryptoKitKey, authenticating: aad))
+//        } catch {
+//            throw ECException.authentication
+//        }
+//    }
 
     /// Decrypts a Data message with ECIES using the ChaCha20/Poly1305 algorithm - possibly with additional authenticated data
     ///
@@ -446,9 +445,9 @@ public class ECPrivateKey: CustomStringConvertible {
     ///   - aad: Additional authenticated data - empty data is default
     /// - Returns: The decrypted message
     /// - Throws: An exception if message authentication fails or the message is too short
-    public func decryptChaCha(msg: Data, aad: Data = Data()) throws -> Data {
-        return try Data(self.decryptChaCha(msg: Bytes(msg), aad: Bytes(aad)))
-    }
+//    public func decryptChaCha(msg: Data, aad: Data = Data()) throws -> Data {
+//        return try Data(self.decryptChaCha(msg: Bytes(msg), aad: Bytes(aad)))
+//    }
 
     /// Decrypts a byte array message with ECIES using the AES/GCM algorithm - possibly with additional authenticated data
     ///
@@ -458,22 +457,22 @@ public class ECPrivateKey: CustomStringConvertible {
     ///   - aad: Additional authenticated data - an empty array is default
     /// - Returns: The decrypted message
     /// - Throws: An exception if message authentication fails or the message is too short
-    public func decryptAESGCM(msg: Bytes, cipher: AESCipher, aad: Bytes = []) throws -> Bytes {
-        let tagLength = 16
-        let (bwl, R, S) = try computeRS(msg, tagLength)
-        let keySize = cipher == .AES128 ? AES.keySize128 : (cipher == .AES192 ? AES.keySize192 : AES.keySize256)
-        let cipherText = Bytes(msg[bwl ..< msg.count - tagLength])
-        let tag = Bytes(msg[msg.count - tagLength ..< msg.count])
-        let (key, nonce) = Cipher.kdf(keySize, 12, self.domain.align(S.x.asMagnitudeBytes()), R)
-        do {
-            let cryptoKitKey = CryptoKit.SymmetricKey(data: key)
-            let cryptoKitNonce = try CryptoKit.AES.GCM.Nonce(data: nonce)
-            let sealbox = try CryptoKit.AES.GCM.SealedBox(nonce: cryptoKitNonce, ciphertext: cipherText, tag: tag)
-            return try Bytes(CryptoKit.AES.GCM.open(sealbox, using: cryptoKitKey, authenticating: aad))
-        } catch {
-            throw ECException.authentication
-        }
-    }
+//    public func decryptAESGCM(msg: Bytes, cipher: AESCipher, aad: Bytes = []) throws -> Bytes {
+//        let tagLength = 16
+//        let (bwl, R, S) = try computeRS(msg, tagLength)
+//        let keySize = cipher == .AES128 ? AES.keySize128 : (cipher == .AES192 ? AES.keySize192 : AES.keySize256)
+//        let cipherText = Bytes(msg[bwl ..< msg.count - tagLength])
+//        let tag = Bytes(msg[msg.count - tagLength ..< msg.count])
+//        let (key, nonce) = Cipher.kdf(keySize, 12, self.domain.align(S.x.asMagnitudeBytes()), R)
+//        do {
+//            let cryptoKitKey = CryptoKit.SymmetricKey(data: key)
+//            let cryptoKitNonce = try CryptoKit.AES.GCM.Nonce(data: nonce)
+//            let sealbox = try CryptoKit.AES.GCM.SealedBox(nonce: cryptoKitNonce, ciphertext: cipherText, tag: tag)
+//            return try Bytes(CryptoKit.AES.GCM.open(sealbox, using: cryptoKitKey, authenticating: aad))
+//        } catch {
+//            throw ECException.authentication
+//        }
+//    }
 
     /// Decrypts a Data message with ECIES using the AES/GCM algorithm - possibly with additional authenticated data
     ///
@@ -483,9 +482,9 @@ public class ECPrivateKey: CustomStringConvertible {
     ///   - aad: Additional authenticated data - empty data is default
     /// - Returns: The decrypted message
     /// - Throws: An exception if message authentication fails or the message is too short
-    public func decryptAESGCM(msg: Data, cipher: AESCipher, aad: Data = Data()) throws -> Data {
-        return try Data(self.decryptAESGCM(msg: Bytes(msg), cipher: cipher, aad: Bytes(aad)))
-    }
+//    public func decryptAESGCM(msg: Data, cipher: AESCipher, aad: Data = Data()) throws -> Data {
+//        return try Data(self.decryptAESGCM(msg: Bytes(msg), cipher: cipher, aad: Bytes(aad)))
+//    }
 
     /// Constructs a shared secret key using Diffie-Hellman key agreement - please refer [SEC 1] section 3.3.1
     ///
